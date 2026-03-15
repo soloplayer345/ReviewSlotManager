@@ -1,55 +1,63 @@
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+using RepositoryLayer.Data;
+
 namespace RepositoryLayer.Repositories;
 
 public class BaseRepository<TEntity>
     where TEntity : class
 {
-    private readonly List<TEntity> _source;
-    private readonly Func<TEntity, int> _idSelector;
-    private readonly Action<TEntity, int> _idSetter;
+    private readonly ReviewSlotDbContext _context;
+    private readonly DbSet<TEntity> _source;
+    private readonly Expression<Func<TEntity, int>> _idSelector;
 
-    public BaseRepository(List<TEntity> source, Func<TEntity, int> idSelector, Action<TEntity, int> idSetter)
+    public BaseRepository(ReviewSlotDbContext context, Expression<Func<TEntity, int>> idSelector)
     {
-        _source = source;
+        _context = context;
+        _source = context.Set<TEntity>();
         _idSelector = idSelector;
-        _idSetter = idSetter;
     }
 
-    public virtual Task<List<TEntity>> Read(int pageSize = 20, int pageNumber = 1)
+    public virtual async Task<List<TEntity>> Read(int pageSize = 20, int pageNumber = 1)
     {
         var skip = Math.Max(0, (pageNumber - 1) * pageSize);
-        var result = _source.Skip(skip).Take(pageSize).ToList();
-        return Task.FromResult(result);
+        return await _source.AsNoTracking().Skip(skip).Take(pageSize).ToListAsync();
     }
 
-    public virtual Task<TEntity?> Read(int id)
+    public virtual async Task<TEntity?> Read(int id)
     {
-        var entity = _source.FirstOrDefault(x => _idSelector(x) == id);
-        return Task.FromResult(entity);
+        return await _source.AsNoTracking().FirstOrDefaultAsync(BuildIdPredicate(id));
     }
 
-    public virtual Task<TEntity> Create(TEntity entity)
+    public virtual async Task<TEntity> Create(TEntity entity)
     {
-        var newId = _source.Select(_idSelector).DefaultIfEmpty(0).Max() + 1;
-        _idSetter(entity, newId);
-        _source.Add(entity);
-        return Task.FromResult(entity);
+        await _source.AddAsync(entity);
+        await _context.SaveChangesAsync();
+        return entity;
     }
 
-    public virtual Task Update(TEntity entity)
+    public virtual async Task Update(TEntity entity)
     {
-        var id = _idSelector(entity);
-        var index = _source.FindIndex(x => _idSelector(x) == id);
-        if (index >= 0)
+        _source.Update(entity);
+        await _context.SaveChangesAsync();
+    }
+
+    public virtual async Task Delete(int id)
+    {
+        var entity = await _source.FirstOrDefaultAsync(BuildIdPredicate(id));
+        if (entity is null)
         {
-            _source[index] = entity;
+            return;
         }
 
-        return Task.CompletedTask;
+        _source.Remove(entity);
+        await _context.SaveChangesAsync();
     }
 
-    public virtual Task Delete(int id)
+    private Expression<Func<TEntity, bool>> BuildIdPredicate(int id)
     {
-        _source.RemoveAll(x => _idSelector(x) == id);
-        return Task.CompletedTask;
+        var parameter = _idSelector.Parameters[0];
+        var body = Expression.Equal(_idSelector.Body, Expression.Constant(id));
+        return Expression.Lambda<Func<TEntity, bool>>(body, parameter);
     }
 }

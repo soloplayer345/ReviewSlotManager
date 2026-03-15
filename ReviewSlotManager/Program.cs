@@ -1,5 +1,7 @@
 
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 using RepositoryLayer.Data;
 using RepositoryLayer.Repositories;
 using ReviewSlotManager.Middlewares;
@@ -34,7 +36,11 @@ public class Program
         });
         builder.Services.AddSingleton(mapperConfig.CreateMapper());
 
-        builder.Services.AddSingleton<InMemoryDataStore>();
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionString")
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnectionString' is missing.");
+
+        builder.Services.AddDbContext<ReviewSlotDbContext>(options =>
+            options.UseSqlServer(connectionString));
 
         builder.Services.AddScoped<SlotRepository>();
         builder.Services.AddScoped<ReviewRoundRepository>();
@@ -47,6 +53,30 @@ public class Program
         builder.Services.AddScoped<ReviewerSlotRegistrationService>();
 
         var app = builder.Build();
+
+        using (var scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<ReviewSlotDbContext>();
+            const int maxRetries = 12;
+            for (var attempt = 1; attempt <= maxRetries; attempt++)
+            {
+                try
+                {
+                    dbContext.Database.Migrate();
+                    DbSeeder.SeedAsync(dbContext).GetAwaiter().GetResult();
+                    break;
+                }
+                catch (Exception ex) when (ex is SqlException or InvalidOperationException)
+                {
+                    if (attempt == maxRetries)
+                    {
+                        throw;
+                    }
+
+                    Thread.Sleep(TimeSpan.FromSeconds(5));
+                }
+            }
+        }
 
         app.UseMiddleware<LogMiddleware>("ReviewSlotManager request");
         app.UseMiddleware<ExceptionMiddleware>();

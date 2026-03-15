@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using RepositoryLayer.Data;
 using RepositoryLayer.Entities;
 using RepositoryLayer.Enums;
@@ -6,22 +7,21 @@ namespace RepositoryLayer.Repositories;
 
 public class ReviewRoundRepository : BaseRepository<ReviewRound>
 {
-    private readonly InMemoryDataStore _store;
+    private readonly ReviewSlotDbContext _context;
 
-    public ReviewRoundRepository(InMemoryDataStore store)
-        : base(store.ReviewRounds, x => x.RoundId, (x, id) => x.RoundId = id)
+    public ReviewRoundRepository(ReviewSlotDbContext context)
+        : base(context, x => x.RoundId)
     {
-        _store = store;
+        _context = context;
     }
 
     public Task<List<ReviewRound>> GetOpenRounds()
     {
         var now = DateTime.UtcNow;
-        var rounds = _store.ReviewRounds
+        return _context.ReviewRounds
+            .AsNoTracking()
             .Where(x => x.Status == ReviewRoundStatus.Open && now >= x.RegistrationOpenAt && now <= x.RegistrationCloseAt)
             .OrderBy(x => x.RoundNumber)
-            .ToList();
-
-        return Task.FromResult(rounds);
+            .ToListAsync();
     }
 }
