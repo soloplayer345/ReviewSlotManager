@@ -5,7 +5,7 @@ using RepositoryLayer.Enums;
 
 namespace RepositoryLayer.Repositories;
 
-public class ReviewRoundRepository : BaseRepository<ReviewRound>
+public class ReviewRoundRepository : BaseRepository<ReviewRound>, IReviewRoundRepository
 {
     private readonly ReviewSlotDbContext _context;
 

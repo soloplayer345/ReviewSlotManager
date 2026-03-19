@@ -5,7 +5,7 @@ using RepositoryLayer.Enums;
 
 namespace RepositoryLayer.Repositories;
 
-public class SlotRepository : BaseRepository<Slot>
+public class SlotRepository : BaseRepository<Slot>, ISlotRepository
 {
     private readonly ReviewSlotDbContext _context;
 

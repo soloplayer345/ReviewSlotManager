@@ -5,12 +5,12 @@ using ServiceLayer.Exceptions;
 
 namespace ServiceLayer.Services;
 
-public class GroupSlotRegistrationService
+public class GroupSlotRegistrationService : IGroupSlotRegistrationService
 {
-    private readonly GroupSlotRegistrationRepository _repository;
+    private readonly IGroupSlotRegistrationRepository _repository;
     private readonly IMapper _mapper;
 
-    public GroupSlotRegistrationService(GroupSlotRegistrationRepository repository, IMapper mapper)
+    public GroupSlotRegistrationService(IGroupSlotRegistrationRepository repository, IMapper mapper)
     {
         _repository = repository;
         _mapper = mapper;

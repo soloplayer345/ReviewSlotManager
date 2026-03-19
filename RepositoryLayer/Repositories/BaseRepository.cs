@@ -4,7 +4,7 @@ using RepositoryLayer.Data;
 
 namespace RepositoryLayer.Repositories;
 
-public class BaseRepository<TEntity>
+public class BaseRepository<TEntity> : IBaseRepository<TEntity>
     where TEntity : class
 {
     private readonly ReviewSlotDbContext _context;

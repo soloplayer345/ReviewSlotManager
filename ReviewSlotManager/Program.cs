@@ -42,15 +42,15 @@ public class Program
         builder.Services.AddDbContext<ReviewSlotDbContext>(options =>
             options.UseSqlServer(connectionString));
 
-        builder.Services.AddScoped<SlotRepository>();
-        builder.Services.AddScoped<ReviewRoundRepository>();
-        builder.Services.AddScoped<GroupSlotRegistrationRepository>();
-        builder.Services.AddScoped<ReviewerSlotRegistrationRepository>();
+        builder.Services.AddScoped<ISlotRepository, SlotRepository>();
+        builder.Services.AddScoped<IReviewRoundRepository, ReviewRoundRepository>();
+        builder.Services.AddScoped<IGroupSlotRegistrationRepository, GroupSlotRegistrationRepository>();
+        builder.Services.AddScoped<IReviewerSlotRegistrationRepository, ReviewerSlotRegistrationRepository>();
 
-        builder.Services.AddScoped<SlotService>();
-        builder.Services.AddScoped<ReviewRoundService>();
-        builder.Services.AddScoped<GroupSlotRegistrationService>();
-        builder.Services.AddScoped<ReviewerSlotRegistrationService>();
+        builder.Services.AddScoped<ISlotService, SlotService>();
+        builder.Services.AddScoped<IReviewRoundService, ReviewRoundService>();
+        builder.Services.AddScoped<IGroupSlotRegistrationService, GroupSlotRegistrationService>();
+        builder.Services.AddScoped<IReviewerSlotRegistrationService, ReviewerSlotRegistrationService>();
 
         var app = builder.Build();
 
@@ -81,8 +81,15 @@ public class Program
         app.UseMiddleware<LogMiddleware>("ReviewSlotManager request");
         app.UseMiddleware<ExceptionMiddleware>();
 
+        app.UseStaticFiles();
         app.UseSwagger();
-        app.UseSwaggerUI();
+        app.UseSwaggerUI(options =>
+        {
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "ReviewSlotManager API v1");
+            
+            // Inject theme switcher script
+            options.InjectJavascript("/swagger-theme-switcher.js");
+        });
 
         app.UseHttpsRedirection();
         app.UseCors("AllowFrontend");

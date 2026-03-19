@@ -3,14 +3,14 @@ using RepositoryLayer.Repositories;
 
 namespace ServiceLayer.Services;
 
-public class BaseService<TEntity, TDto>
+public class BaseService<TEntity, TDto> : IBaseService<TEntity, TDto>
     where TEntity : class
     where TDto : class
 {
-    private readonly BaseRepository<TEntity> _repository;
+    private readonly IBaseRepository<TEntity> _repository;
     private readonly IMapper _mapper;
 
-    public BaseService(BaseRepository<TEntity> repository, IMapper mapper)
+    public BaseService(IBaseRepository<TEntity> repository, IMapper mapper)
     {
         _repository = repository;
         _mapper = mapper;

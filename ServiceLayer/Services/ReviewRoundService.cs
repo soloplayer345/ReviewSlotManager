@@ -5,12 +5,12 @@ using ServiceLayer.DTOs;
 
 namespace ServiceLayer.Services;
 
-public class ReviewRoundService : BaseService<ReviewRound, ReviewRoundDto>
+public class ReviewRoundService : BaseService<ReviewRound, ReviewRoundDto>, IReviewRoundService
 {
-    private readonly ReviewRoundRepository _roundRepository;
+    private readonly IReviewRoundRepository _roundRepository;
     private readonly IMapper _mapper;
 
-    public ReviewRoundService(ReviewRoundRepository roundRepository, IMapper mapper)
+    public ReviewRoundService(IReviewRoundRepository roundRepository, IMapper mapper)
         : base(roundRepository, mapper)
     {
         _roundRepository = roundRepository;

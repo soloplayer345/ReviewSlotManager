@@ -5,12 +5,12 @@ using ServiceLayer.DTOs;
 
 namespace ServiceLayer.Services;
 
-public class SlotService : BaseService<Slot, SlotDto>
+public class SlotService : BaseService<Slot, SlotDto>, ISlotService
 {
-    private readonly SlotRepository _slotRepository;
+    private readonly ISlotRepository _slotRepository;
     private readonly IMapper _mapper;
 
-    public SlotService(SlotRepository slotRepository, IMapper mapper)
+    public SlotService(ISlotRepository slotRepository, IMapper mapper)
         : base(slotRepository, mapper)
     {
         _slotRepository = slotRepository;

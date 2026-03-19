@@ -1,0 +1,45 @@
+@charset "UTF-8";
+
+/* Default Light theme for Swagger UI */
+
+.swagger-ui {
+  background: #f8fafc;
+}
+
+.swagger-ui .wrapper {
+  background: transparent;
+}
+
+.swagger-ui .scheme-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+.swagger-ui .information-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.swagger-ui .opblock {
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+.swagger-ui .opblock .opblock-summary {
+  border-radius: 10px;
+}
+
+.swagger-ui .topbar {
+  background: linear-gradient(90deg, #111827, #1f2937);
+}
+
+.swagger-ui .topbar .download-url-wrapper input[type=text] {
+  border-radius: 8px 0 0 8px;
+}
+
+.swagger-ui .topbar .download-url-wrapper .download-url-button {
+  border-radius: 0 8px 8px 0;
+}

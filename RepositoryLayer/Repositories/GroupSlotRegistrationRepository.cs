@@ -5,7 +5,7 @@ using RepositoryLayer.Enums;
 
 namespace RepositoryLayer.Repositories;
 
-public class GroupSlotRegistrationRepository
+public class GroupSlotRegistrationRepository : IGroupSlotRegistrationRepository
 {
     private readonly ReviewSlotDbContext _context;
 
