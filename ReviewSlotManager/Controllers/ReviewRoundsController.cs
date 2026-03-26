@@ -1,3 +1,4 @@
+using ServiceLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.DTOs;
 using ServiceLayer.Services;
@@ -18,5 +19,26 @@ public class ReviewRoundsController : BaseController<IReviewRoundService, Review
     {
         var result = await _service.GetOpenRounds();
         return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateReviewRoundDto dto)
+    {
+        var result = await _service.Create(dto);
+        return CreatedAtAction(nameof(GetById), new { id = result.RoundId }, result);
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateReviewRoundDto dto)
+    {
+        var result = await _service.Update(id, dto);
+        return Ok(result);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        await _service.Delete(id);
+        return NoContent();
     }
 }

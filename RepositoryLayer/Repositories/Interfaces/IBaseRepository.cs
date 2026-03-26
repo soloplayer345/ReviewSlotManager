@@ -1,4 +1,4 @@
-namespace RepositoryLayer.Repositories;
+namespace RepositoryLayer.Repositories.Interfaces;
 
 public interface IBaseRepository<TEntity>
     where TEntity : class

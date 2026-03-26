@@ -1,3 +1,4 @@
+using RepositoryLayer.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using RepositoryLayer.Data;
 using RepositoryLayer.Entities;
@@ -21,6 +22,35 @@ public class GroupSlotRegistrationRepository : IGroupSlotRegistrationRepository
             .AsNoTracking()
             .Skip(skip)
             .Take(pageSize)
+            .ToListAsync();
+    }
+
+    public Task<GroupSlotRegistration?> GetById(int registrationId)
+    {
+        return _context.GroupSlotRegistrations
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.RegistrationId == registrationId);
+    }
+
+    public Task<int> Count()
+    {
+        return _context.GroupSlotRegistrations.CountAsync();
+    }
+
+    public Task<List<GroupSlotRegistration>> GetBySlot(int slotId)
+    {
+        return _context.GroupSlotRegistrations
+            .AsNoTracking()
+            .Where(x => x.SlotId == slotId && x.Status == RegistrationStatus.Registered)
+            .ToListAsync();
+    }
+
+    public Task<List<GroupSlotRegistration>> GetByGroup(int groupId)
+    {
+        return _context.GroupSlotRegistrations
+            .AsNoTracking()
+            .Where(x => x.GroupId == groupId)
+            .OrderByDescending(x => x.RegisteredAt)
             .ToListAsync();
     }
 

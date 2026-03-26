@@ -1,12 +1,19 @@
+using RepositoryLayer.Repositories.Interfaces;
+using ServiceLayer.Services.Interfaces;
 
+using System.Text;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using RepositoryLayer.Data;
 using RepositoryLayer.Repositories;
 using ReviewSlotManager.Middlewares;
 using ServiceLayer.Mappings;
 using ServiceLayer.Services;
+using ServiceLayer.Settings;
 
 namespace ReviewSlotManager;
 
@@ -28,7 +35,28 @@ public class Program
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Nhập JWT token. Ví dụ: Bearer {token}"
+            });
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                    },
+                    Array.Empty<string>()
+                }
+            });
+        });
 
         var mapperConfig = new MapperConfiguration(cfg =>
         {
@@ -46,11 +74,45 @@ public class Program
         builder.Services.AddScoped<IReviewRoundRepository, ReviewRoundRepository>();
         builder.Services.AddScoped<IGroupSlotRegistrationRepository, GroupSlotRegistrationRepository>();
         builder.Services.AddScoped<IReviewerSlotRegistrationRepository, ReviewerSlotRegistrationRepository>();
+        builder.Services.AddScoped<ISemesterRepository, SemesterRepository>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+        builder.Services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
+        builder.Services.AddScoped<IReviewerSlotConfigRepository, ReviewerSlotConfigRepository>();
+        builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
         builder.Services.AddScoped<ISlotService, SlotService>();
         builder.Services.AddScoped<IReviewRoundService, ReviewRoundService>();
         builder.Services.AddScoped<IGroupSlotRegistrationService, GroupSlotRegistrationService>();
         builder.Services.AddScoped<IReviewerSlotRegistrationService, ReviewerSlotRegistrationService>();
+        builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddScoped<ISemesterService, SemesterService>();
+        builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IGroupService, GroupService>();
+        builder.Services.AddScoped<IGroupMemberService, GroupMemberService>();
+        builder.Services.AddScoped<IReviewerSlotConfigService, ReviewerSlotConfigService>();
+        builder.Services.AddScoped<INotificationService, NotificationService>();
+
+        // JWT Settings
+        builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+        var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()
+            ?? throw new InvalidOperationException("JWT settings are missing.");
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
+                };
+            });
+        builder.Services.AddAuthorization();
 
         var app = builder.Build();
 
@@ -93,6 +155,7 @@ public class Program
 
         app.UseHttpsRedirection();
         app.UseCors("AllowFrontend");
+        app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
 

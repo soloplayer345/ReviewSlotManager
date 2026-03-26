@@ -34,11 +34,27 @@ http://localhost:8080/swagger/index.html
 
 ## 3. Cấu trúc thư mục chính
 
-- ReviewSlotManager.sln
-- ReviewSlotManager/
-- ServiceLayer/
-- RepositoryLayer/
-- docker-compose.yml
+```
+ReviewSlotManager.sln
+docker-compose.yml
+ReviewSlotManager/          # Web API (Controllers, Middlewares)
+│   Controllers/
+│   Middlewares/
+ServiceLayer/               # Business logic
+│   DTOs/
+│   Mappings/
+│   Services/
+│   │   Interfaces/         # Service interfaces (tách riêng)
+│   Settings/
+│   Exceptions/
+RepositoryLayer/            # Data access (EF Core)
+│   Data/
+│   Entities/
+│   Enums/
+│   Migrations/
+│   Repositories/
+│   │   Interfaces/         # Repository interfaces (tách riêng)
+```
 
 ## 4. Chạy bằng Docker (khuyến nghị cho team)
 
@@ -179,18 +195,131 @@ dotnet ef database update --project .\RepositoryLayer\RepositoryLayer.csproj --s
 
 ## 7. API chính
 
-Base route: /api
+Base route: `/api`
 
-- GET /api/Slots
-- GET /api/Slots/round/{roundId}
-- GET /api/ReviewRounds
-- GET /api/ReviewRounds/open
-- GET /api/GroupSlotRegistrations
-- POST /api/GroupSlotRegistrations
-- PUT /api/GroupSlotRegistrations/{registrationId}/cancel
-- GET /api/ReviewerSlotRegistrations
-- POST /api/ReviewerSlotRegistrations
-- PUT /api/ReviewerSlotRegistrations/{registrationId}/cancel
+Tất cả API theo chuẩn **Shopify REST** (GET list có phân trang, GET by id, GET count, POST create → 201, PUT update, DELETE → 204).
+
+### Auth
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| POST | /api/Auth/login | Đăng nhập, trả JWT token |
+
+### Semesters
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| GET | /api/Semesters | Danh sách semester (phân trang) |
+| GET | /api/Semesters/{id} | Chi tiết semester |
+| GET | /api/Semesters/count | Đếm tổng semester |
+| GET | /api/Semesters/active | Semester đang active |
+| POST | /api/Semesters | Tạo semester |
+| PUT | /api/Semesters/{id} | Cập nhật semester |
+| DELETE | /api/Semesters/{id} | Xóa semester |
+
+### Users
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| GET | /api/Users | Danh sách users (phân trang) |
+| GET | /api/Users/{id} | Chi tiết user |
+| GET | /api/Users/count | Đếm tổng users |
+| POST | /api/Users | Tạo user (password tự hash) |
+| PUT | /api/Users/{id} | Cập nhật user |
+| DELETE | /api/Users/{id} | Xóa user |
+
+### Groups
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| GET | /api/Groups | Danh sách groups (phân trang) |
+| GET | /api/Groups/{id} | Chi tiết group |
+| GET | /api/Groups/count | Đếm tổng groups |
+| GET | /api/Groups/semester/{semesterId} | Groups theo semester |
+| POST | /api/Groups | Tạo group |
+| PUT | /api/Groups/{id} | Cập nhật group |
+| DELETE | /api/Groups/{id} | Xóa group |
+
+### GroupMembers
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| GET | /api/GroupMembers | Danh sách members (phân trang) |
+| GET | /api/GroupMembers/{id} | Chi tiết member |
+| GET | /api/GroupMembers/count | Đếm tổng members |
+| GET | /api/GroupMembers/group/{groupId} | Members theo group |
+| POST | /api/GroupMembers | Thêm member vào group |
+| DELETE | /api/GroupMembers/{id} | Xóa member |
+
+### Slots
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| GET | /api/Slots | Danh sách slots (phân trang) |
+| GET | /api/Slots/{id} | Chi tiết slot |
+| GET | /api/Slots/round/{roundId} | Slots theo review round |
+| POST | /api/Slots | Tạo slot |
+| PUT | /api/Slots/{id} | Cập nhật slot |
+| DELETE | /api/Slots/{id} | Xóa slot |
+
+### ReviewRounds
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| GET | /api/ReviewRounds | Danh sách review rounds (phân trang) |
+| GET | /api/ReviewRounds/{id} | Chi tiết review round |
+| GET | /api/ReviewRounds/open | Các round đang mở đăng ký |
+| POST | /api/ReviewRounds | Tạo review round |
+| PUT | /api/ReviewRounds/{id} | Cập nhật review round |
+| DELETE | /api/ReviewRounds/{id} | Xóa review round |
+
+### ReviewerSlotConfigs
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| GET | /api/ReviewerSlotConfigs | Danh sách configs (phân trang) |
+| GET | /api/ReviewerSlotConfigs/{id} | Chi tiết config |
+| GET | /api/ReviewerSlotConfigs/round/{roundId} | Configs theo round |
+| POST | /api/ReviewerSlotConfigs | Tạo config |
+| PUT | /api/ReviewerSlotConfigs/{id} | Cập nhật config |
+| DELETE | /api/ReviewerSlotConfigs/{id} | Xóa config |
+
+### GroupSlotRegistrations
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| GET | /api/GroupSlotRegistrations | Danh sách đăng ký (phân trang) |
+| GET | /api/GroupSlotRegistrations/{id} | Chi tiết đăng ký |
+| GET | /api/GroupSlotRegistrations/count | Đếm tổng đăng ký |
+| GET | /api/GroupSlotRegistrations/slot/{slotId} | Đăng ký theo slot |
+| GET | /api/GroupSlotRegistrations/group/{groupId} | Đăng ký theo group |
+| POST | /api/GroupSlotRegistrations | Nhóm đăng ký slot |
+| PUT | /api/GroupSlotRegistrations/{registrationId}/cancel | Hủy đăng ký |
+
+### ReviewerSlotRegistrations
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| GET | /api/ReviewerSlotRegistrations | Danh sách đăng ký (phân trang) |
+| GET | /api/ReviewerSlotRegistrations/{id} | Chi tiết đăng ký |
+| GET | /api/ReviewerSlotRegistrations/count | Đếm tổng đăng ký |
+| GET | /api/ReviewerSlotRegistrations/slot/{slotId} | Đăng ký theo slot |
+| GET | /api/ReviewerSlotRegistrations/reviewer/{reviewerId} | Đăng ký theo reviewer |
+| POST | /api/ReviewerSlotRegistrations | Reviewer đăng ký slot |
+| PUT | /api/ReviewerSlotRegistrations/{registrationId}/cancel | Hủy đăng ký |
+
+### Notifications
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| GET | /api/Notifications | Danh sách thông báo (phân trang) |
+| GET | /api/Notifications/{id} | Chi tiết thông báo |
+| GET | /api/Notifications/count | Đếm tổng thông báo |
+| GET | /api/Notifications/user/{userId} | Thông báo theo user |
+| POST | /api/Notifications | Tạo thông báo |
+| PUT | /api/Notifications/{id}/read | Đánh dấu đã đọc |
+| PUT | /api/Notifications/user/{userId}/read-all | Đánh dấu tất cả đã đọc |
+| DELETE | /api/Notifications/{id} | Xóa thông báo |
 
 ## 8. Seed dữ liệu mẫu
 
@@ -260,3 +389,43 @@ Logic seed nằm tại:
 - Nếu đổi schema DB, luôn thêm migration trong cùng PR.
 - Trước khi push: chạy docker compose up hoặc dotnet build để kiểm tra compile.
 - Review PR tập trung vào business rule trong ServiceLayer và transaction logic trong RepositoryLayer.
+
+## 11. Changelog
+
+### Branch: `api/login-CRUD-basic`
+
+**Thêm mới CRUD APIs cho tất cả entities theo chuẩn Shopify REST:**
+
+- **Semesters** — full CRUD + GET active semester
+- **Users** — full CRUD (password tự hash bằng BCrypt)
+- **Groups** — full CRUD + GET theo semester
+- **GroupMembers** — full CRUD + GET theo group
+- **ReviewerSlotConfigs** — full CRUD + GET theo round
+- **Notifications** — full CRUD + đánh dấu đã đọc (1 hoặc tất cả)
+
+**Mở rộng APIs đã có:**
+
+- **Slots** — thêm POST create, PUT update, DELETE
+- **ReviewRounds** — thêm POST create, PUT update, DELETE
+- **GroupSlotRegistrations** — thêm GET by id, GET count, GET by slot, GET by group
+- **ReviewerSlotRegistrations** — thêm GET by id, GET count, GET by slot, GET by reviewer
+
+**DTOs mới:**
+
+- CreateSemesterDto, UpdateSemesterDto, SemesterDto
+- CreateUserDto, UpdateUserDto, UserDto
+- CreateGroupDto, UpdateGroupDto, GroupDto
+- CreateGroupMemberDto, GroupMemberDto
+- CreateReviewerSlotConfigDto, UpdateReviewerSlotConfigDto, ReviewerSlotConfigDto
+- CreateNotificationDto, NotificationDto
+- CreateSlotDto, UpdateSlotDto
+- CreateReviewRoundDto, UpdateReviewRoundDto
+
+**Tái cấu trúc code:**
+
+- Tách interface Service vào thư mục riêng: `ServiceLayer/Services/Interfaces/`
+- Tách interface Repository vào thư mục riêng: `RepositoryLayer/Repositories/Interfaces/`
+- Mở rộng `BaseService` hỗ trợ Create, Update, Delete (trước đó chỉ có Read)
+- Mở rộng `BaseController` thêm `GetById` endpoint
+
+**Tổng cộng: ~70 API endpoints (từ 10 lên 70+)**

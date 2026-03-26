@@ -1,0 +1,28 @@
+using ServiceLayer.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using ServiceLayer.DTOs;
+using ServiceLayer.Services;
+
+namespace ReviewSlotManager.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class AuthController : ControllerBase
+{
+    private readonly IAuthService _authService;
+
+    public AuthController(IAuthService authService)
+    {
+        _authService = authService;
+    }
+
+    /// <summary>
+    /// Đăng nhập và nhận JWT token.
+    /// </summary>
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
+    {
+        var result = await _authService.LoginAsync(request);
+        return Ok(result);
+    }
+}

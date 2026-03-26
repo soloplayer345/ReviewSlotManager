@@ -1,3 +1,5 @@
+using RepositoryLayer.Repositories.Interfaces;
+using ServiceLayer.Services.Interfaces;
 using AutoMapper;
 using RepositoryLayer.Repositories;
 
@@ -26,5 +28,25 @@ public class BaseService<TEntity, TDto> : IBaseService<TEntity, TDto>
     {
         var entity = await _repository.Read(id) ?? throw new KeyNotFoundException("Entity not found.");
         return _mapper.Map<TDto>(entity);
+    }
+
+    public virtual async Task<TDto> Create(TDto dto)
+    {
+        var entity = _mapper.Map<TEntity>(dto);
+        var created = await _repository.Create(entity);
+        return _mapper.Map<TDto>(created);
+    }
+
+    public virtual async Task<TDto> Update(int id, TDto dto)
+    {
+        var existing = await _repository.Read(id) ?? throw new KeyNotFoundException("Entity not found.");
+        _mapper.Map(dto, existing);
+        await _repository.Update(existing);
+        return _mapper.Map<TDto>(existing);
+    }
+
+    public virtual async Task Delete(int id)
+    {
+        await _repository.Delete(id);
     }
 }
