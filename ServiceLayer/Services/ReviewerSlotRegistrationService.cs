@@ -1,3 +1,5 @@
+using RepositoryLayer.Repositories.Interfaces;
+using ServiceLayer.Services.Interfaces;
 using AutoMapper;
 using RepositoryLayer.Repositories;
 using ServiceLayer.DTOs;
@@ -19,6 +21,30 @@ public class ReviewerSlotRegistrationService : IReviewerSlotRegistrationService
     public async Task<List<ReviewerSlotRegistrationDto>> Read(int pageSize, int pageNumber)
     {
         var entities = await _repository.Read(pageSize, pageNumber);
+        return _mapper.Map<List<ReviewerSlotRegistrationDto>>(entities);
+    }
+
+    public async Task<ReviewerSlotRegistrationDto> GetById(int reviewerRegistrationId)
+    {
+        var entity = await _repository.GetById(reviewerRegistrationId)
+            ?? throw new NotFoundException($"Reviewer registration {reviewerRegistrationId} not found.");
+        return _mapper.Map<ReviewerSlotRegistrationDto>(entity);
+    }
+
+    public Task<int> Count()
+    {
+        return _repository.Count();
+    }
+
+    public async Task<List<ReviewerSlotRegistrationDto>> GetBySlot(int slotId)
+    {
+        var entities = await _repository.GetBySlot(slotId);
+        return _mapper.Map<List<ReviewerSlotRegistrationDto>>(entities);
+    }
+
+    public async Task<List<ReviewerSlotRegistrationDto>> GetByReviewer(int reviewerId)
+    {
+        var entities = await _repository.GetByReviewer(reviewerId);
         return _mapper.Map<List<ReviewerSlotRegistrationDto>>(entities);
     }
 

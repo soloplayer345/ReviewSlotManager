@@ -1,14 +1,15 @@
+using ServiceLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.DTOs;
 using ServiceLayer.Services;
 
 namespace ReviewSlotManager.Controllers;
 
-public class ReviewRoundsController : BaseController<ReviewRoundService, ReviewRoundDto>
+public class ReviewRoundsController : BaseController<IReviewRoundService, ReviewRoundDto>
 {
-    private readonly ReviewRoundService _service;
+    private readonly IReviewRoundService _service;
 
-    public ReviewRoundsController(ReviewRoundService service) : base(service)
+    public ReviewRoundsController(IReviewRoundService service) : base(service)
     {
         _service = service;
     }
@@ -18,5 +19,26 @@ public class ReviewRoundsController : BaseController<ReviewRoundService, ReviewR
     {
         var result = await _service.GetOpenRounds();
         return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateReviewRoundDto dto)
+    {
+        var result = await _service.Create(dto);
+        return CreatedAtAction(nameof(GetById), new { id = result.RoundId }, result);
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateReviewRoundDto dto)
+    {
+        var result = await _service.Update(id, dto);
+        return Ok(result);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        await _service.Delete(id);
+        return NoContent();
     }
 }

@@ -1,14 +1,15 @@
+using ServiceLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.DTOs;
 using ServiceLayer.Services;
 
 namespace ReviewSlotManager.Controllers;
 
-public class SlotsController : BaseController<SlotService, SlotDto>
+public class SlotsController : BaseController<ISlotService, SlotDto>
 {
-    private readonly SlotService _service;
+    private readonly ISlotService _service;
 
-    public SlotsController(SlotService service) : base(service)
+    public SlotsController(ISlotService service) : base(service)
     {
         _service = service;
     }
@@ -18,5 +19,26 @@ public class SlotsController : BaseController<SlotService, SlotDto>
     {
         var result = await _service.GetAvailableSlotsByRound(roundId);
         return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateSlotDto dto)
+    {
+        var result = await _service.Create(dto);
+        return CreatedAtAction(nameof(GetById), new { id = result.SlotId }, result);
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateSlotDto dto)
+    {
+        var result = await _service.Update(id, dto);
+        return Ok(result);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        await _service.Delete(id);
+        return NoContent();
     }
 }

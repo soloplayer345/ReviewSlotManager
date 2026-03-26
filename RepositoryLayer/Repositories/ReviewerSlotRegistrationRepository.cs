@@ -1,3 +1,4 @@
+using RepositoryLayer.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using RepositoryLayer.Data;
 using RepositoryLayer.Entities;
@@ -21,6 +22,35 @@ public class ReviewerSlotRegistrationRepository : IReviewerSlotRegistrationRepos
             .AsNoTracking()
             .Skip(skip)
             .Take(pageSize)
+            .ToListAsync();
+    }
+
+    public Task<ReviewerSlotRegistration?> GetById(int reviewerRegistrationId)
+    {
+        return _context.ReviewerSlotRegistrations
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.ReviewerRegistrationId == reviewerRegistrationId);
+    }
+
+    public Task<int> Count()
+    {
+        return _context.ReviewerSlotRegistrations.CountAsync();
+    }
+
+    public Task<List<ReviewerSlotRegistration>> GetBySlot(int slotId)
+    {
+        return _context.ReviewerSlotRegistrations
+            .AsNoTracking()
+            .Where(x => x.SlotId == slotId && x.Status == RegistrationStatus.Registered)
+            .ToListAsync();
+    }
+
+    public Task<List<ReviewerSlotRegistration>> GetByReviewer(int reviewerId)
+    {
+        return _context.ReviewerSlotRegistrations
+            .AsNoTracking()
+            .Where(x => x.ReviewerId == reviewerId)
+            .OrderByDescending(x => x.RegisteredAt)
             .ToListAsync();
     }
 

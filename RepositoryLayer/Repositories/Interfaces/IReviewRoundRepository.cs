@@ -1,6 +1,6 @@
 using RepositoryLayer.Entities;
 
-namespace RepositoryLayer.Repositories;
+namespace RepositoryLayer.Repositories.Interfaces;
 
 public interface IReviewRoundRepository : IBaseRepository<ReviewRound>
 {
