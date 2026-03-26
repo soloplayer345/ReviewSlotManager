@@ -7,9 +7,9 @@ namespace ReviewSlotManager.Controllers;
 [Route("api/[controller]")]
 public class ReviewerSlotRegistrationsController : ControllerBase
 {
-    private readonly ReviewerSlotRegistrationService _service;
+    private readonly IReviewerSlotRegistrationService _service;
 
-    public ReviewerSlotRegistrationsController(ReviewerSlotRegistrationService service)
+    public ReviewerSlotRegistrationsController(IReviewerSlotRegistrationService service)
     {
         _service = service;
     }

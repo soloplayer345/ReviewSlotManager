@@ -7,9 +7,9 @@ namespace ReviewSlotManager.Controllers;
 [Route("api/[controller]")]
 public class GroupSlotRegistrationsController : ControllerBase
 {
-    private readonly GroupSlotRegistrationService _service;
+    private readonly IGroupSlotRegistrationService _service;
 
-    public GroupSlotRegistrationsController(GroupSlotRegistrationService service)
+    public GroupSlotRegistrationsController(IGroupSlotRegistrationService service)
     {
         _service = service;
     }

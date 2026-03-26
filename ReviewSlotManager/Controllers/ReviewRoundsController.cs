@@ -4,11 +4,11 @@ using ServiceLayer.Services;
 
 namespace ReviewSlotManager.Controllers;
 
-public class ReviewRoundsController : BaseController<ReviewRoundService, ReviewRoundDto>
+public class ReviewRoundsController : BaseController<IReviewRoundService, ReviewRoundDto>
 {
-    private readonly ReviewRoundService _service;
+    private readonly IReviewRoundService _service;
 
-    public ReviewRoundsController(ReviewRoundService service) : base(service)
+    public ReviewRoundsController(IReviewRoundService service) : base(service)
     {
         _service = service;
     }

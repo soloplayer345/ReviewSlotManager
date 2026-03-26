@@ -4,11 +4,11 @@ using ServiceLayer.Services;
 
 namespace ReviewSlotManager.Controllers;
 
-public class SlotsController : BaseController<SlotService, SlotDto>
+public class SlotsController : BaseController<ISlotService, SlotDto>
 {
-    private readonly SlotService _service;
+    private readonly ISlotService _service;
 
-    public SlotsController(SlotService service) : base(service)
+    public SlotsController(ISlotService service) : base(service)
     {
         _service = service;
     }
