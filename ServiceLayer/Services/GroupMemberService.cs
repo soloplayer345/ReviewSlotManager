@@ -30,6 +30,12 @@ public class GroupMemberService : BaseService<GroupMember, GroupMemberDto>, IGro
         return _mapper.Map<List<GroupMemberDto>>(members);
     }
 
+    public async Task<List<GroupMemberDto>> GetByStudent(int studentId)
+    {
+        var members = await _groupMemberRepository.GetByStudent(studentId);
+        return _mapper.Map<List<GroupMemberDto>>(members);
+    }
+
     public async Task<GroupMemberDto> Create(CreateGroupMemberDto dto)
     {
         var entity = _mapper.Map<GroupMember>(dto);

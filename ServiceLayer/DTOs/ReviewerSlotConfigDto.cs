@@ -7,4 +7,5 @@ public class ReviewerSlotConfigDto
     public int MinSlots { get; set; }
     public int MaxSlots { get; set; }
     public int UpdatedBy { get; set; }
+    public DateTime UpdatedAt { get; set; }
 }

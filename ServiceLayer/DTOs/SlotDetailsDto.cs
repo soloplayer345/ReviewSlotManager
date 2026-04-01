@@ -1,6 +1,6 @@
 namespace ServiceLayer.DTOs;
 
-public class SlotDto
+public class SlotDetailsDto
 {
     public int SlotId { get; set; }
     public int RoundId { get; set; }
@@ -11,6 +11,7 @@ public class SlotDto
     public int CurrentGroupCount { get; set; }
     public int MinReviewers { get; set; }
     public int MaxReviewers { get; set; }
+    public int CurrentReviewerCount { get; set; }
     public int CreatedBy { get; set; }
     public string Status { get; set; } = string.Empty;
 }

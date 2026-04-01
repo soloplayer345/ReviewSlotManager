@@ -8,5 +8,7 @@ public class ReviewRoundDto
     public string RoundName { get; set; } = string.Empty;
     public DateTime RegistrationOpenAt { get; set; }
     public DateTime RegistrationCloseAt { get; set; }
+    public DateTime ReviewDateFrom { get; set; }
+    public DateTime ReviewDateTo { get; set; }
     public string Status { get; set; } = string.Empty;
 }

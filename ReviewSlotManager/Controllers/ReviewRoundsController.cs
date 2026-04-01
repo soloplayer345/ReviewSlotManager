@@ -21,6 +21,13 @@ public class ReviewRoundsController : BaseController<IReviewRoundService, Review
         return Ok(result);
     }
 
+    [HttpGet("semester/{semesterId:int}")]
+    public async Task<IActionResult> GetBySemester(int semesterId)
+    {
+        var result = await _service.GetBySemester(semesterId);
+        return Ok(result);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateReviewRoundDto dto)
     {

@@ -28,6 +28,13 @@ public class GroupMembersController : BaseController<IGroupMemberService, GroupM
         return Ok(result);
     }
 
+    [HttpGet("student/{studentId:int}")]
+    public async Task<IActionResult> GetByStudent(int studentId)
+    {
+        var result = await _service.GetByStudent(studentId);
+        return Ok(result);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateGroupMemberDto dto)
     {

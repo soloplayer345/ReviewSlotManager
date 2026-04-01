@@ -26,6 +26,12 @@ public class ReviewRoundService : BaseService<ReviewRound, ReviewRoundDto>, IRev
         return _mapper.Map<List<ReviewRoundDto>>(rounds);
     }
 
+    public async Task<List<ReviewRoundDto>> GetBySemester(int semesterId)
+    {
+        var rounds = await _roundRepository.GetBySemester(semesterId);
+        return _mapper.Map<List<ReviewRoundDto>>(rounds);
+    }
+
     public async Task<ReviewRoundDto> Create(CreateReviewRoundDto dto)
     {
         var entity = new ReviewRound

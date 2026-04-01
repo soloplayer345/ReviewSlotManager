@@ -37,6 +37,7 @@ public class ReviewSlotDbContext : DbContext
         modelBuilder.Entity<Notification>().HasKey(x => x.NotificationId);
 
         modelBuilder.Entity<User>().Property(x => x.Email).HasMaxLength(255);
+        modelBuilder.Entity<ReviewerSlotConfig>().Property(x => x.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");
 
         modelBuilder.Entity<ReviewRound>()
             .HasOne<Semester>()

@@ -37,6 +37,7 @@ public class AuthService : IAuthService
 
         return Task.FromResult(new LoginResponseDto
         {
+            UserId = user.UserId,
             Token = token,
             FullName = user.FullName,
             Email = user.Email,

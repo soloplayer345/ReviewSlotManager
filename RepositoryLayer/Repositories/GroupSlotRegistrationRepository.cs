@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RepositoryLayer.Data;
 using RepositoryLayer.Entities;
 using RepositoryLayer.Enums;
+using System.Data;
 
 namespace RepositoryLayer.Repositories;
 
@@ -56,7 +57,8 @@ public class GroupSlotRegistrationRepository : IGroupSlotRegistrationRepository
 
     public async Task<GroupSlotRegistration> Register(int groupId, int slotId, int userId)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
+        await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+        await _context.Database.ExecuteSqlInterpolatedAsync($"SELECT 1 FROM Slots WITH (UPDLOCK, HOLDLOCK) WHERE SlotId = {slotId}");
 
         var slot = await _context.Slots.FirstOrDefaultAsync(x => x.SlotId == slotId)
             ?? throw new KeyNotFoundException("Slot not found.");

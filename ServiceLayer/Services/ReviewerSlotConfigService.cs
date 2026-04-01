@@ -32,6 +32,7 @@ public class ReviewerSlotConfigService : BaseService<ReviewerSlotConfig, Reviewe
             throw new InvalidOperationException($"Config for round {dto.RoundId} already exists.");
 
         var entity = _mapper.Map<ReviewerSlotConfig>(dto);
+        entity.UpdatedAt = DateTime.UtcNow;
         var created = await _configRepository.Create(entity);
         return _mapper.Map<ReviewerSlotConfigDto>(created);
     }
@@ -43,6 +44,7 @@ public class ReviewerSlotConfigService : BaseService<ReviewerSlotConfig, Reviewe
         existing.MinSlots = dto.MinSlots;
         existing.MaxSlots = dto.MaxSlots;
         existing.UpdatedBy = dto.UpdatedBy;
+        existing.UpdatedAt = DateTime.UtcNow;
         await _configRepository.Update(existing);
         return _mapper.Map<ReviewerSlotConfigDto>(existing);
     }

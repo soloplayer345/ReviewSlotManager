@@ -25,4 +25,13 @@ public class ReviewRoundRepository : BaseRepository<ReviewRound>, IReviewRoundRe
             .OrderBy(x => x.RoundNumber)
             .ToListAsync();
     }
+
+    public Task<List<ReviewRound>> GetBySemester(int semesterId)
+    {
+        return _context.ReviewRounds
+            .AsNoTracking()
+            .Where(x => x.SemesterId == semesterId)
+            .OrderBy(x => x.RoundNumber)
+            .ToListAsync();
+    }
 }

@@ -21,6 +21,13 @@ public class SlotsController : BaseController<ISlotService, SlotDto>
         return Ok(result);
     }
 
+    [HttpGet("round/{roundId:int}/details")]
+    public async Task<IActionResult> GetDetailsByRound(int roundId)
+    {
+        var result = await _service.GetDetailsByRound(roundId);
+        return Ok(result);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateSlotDto dto)
     {
