@@ -11,11 +11,16 @@ public class GroupSlotRegistrationService : IGroupSlotRegistrationService
 {
     private readonly IGroupSlotRegistrationRepository _repository;
     private readonly IMapper _mapper;
+    private readonly ISlotRealtimeNotifier _slotRealtimeNotifier;
 
-    public GroupSlotRegistrationService(IGroupSlotRegistrationRepository repository, IMapper mapper)
+    public GroupSlotRegistrationService(
+        IGroupSlotRegistrationRepository repository,
+        IMapper mapper,
+        ISlotRealtimeNotifier slotRealtimeNotifier)
     {
         _repository = repository;
         _mapper = mapper;
+        _slotRealtimeNotifier = slotRealtimeNotifier;
     }
 
     public async Task<List<GroupSlotRegistrationDto>> Read(int pageSize, int pageNumber)
@@ -53,6 +58,7 @@ public class GroupSlotRegistrationService : IGroupSlotRegistrationService
         try
         {
             var entity = await _repository.Register(dto.GroupId, dto.SlotId, dto.RegisteredBy);
+            await _slotRealtimeNotifier.PublishSlotStatusChanged(dto.SlotId);
             return _mapper.Map<GroupSlotRegistrationDto>(entity);
         }
         catch (KeyNotFoundException ex)
@@ -69,7 +75,10 @@ public class GroupSlotRegistrationService : IGroupSlotRegistrationService
     {
         try
         {
+            var existing = await _repository.GetById(registrationId)
+                ?? throw new KeyNotFoundException("Registration not found.");
             await _repository.Cancel(registrationId);
+            await _slotRealtimeNotifier.PublishSlotStatusChanged(existing.SlotId);
         }
         catch (KeyNotFoundException ex)
         {

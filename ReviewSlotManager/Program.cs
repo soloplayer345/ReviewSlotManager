@@ -10,7 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RepositoryLayer.Data;
 using RepositoryLayer.Repositories;
+using ReviewSlotManager.Hubs;
 using ReviewSlotManager.Middlewares;
+using ReviewSlotManager.Realtime;
 using ServiceLayer.Mappings;
 using ServiceLayer.Services;
 using ServiceLayer.Settings;
@@ -29,11 +31,13 @@ public class Program
             {
                 policy.WithOrigins("http://localhost:3000")
                     .AllowAnyMethod()
-                    .AllowAnyHeader();
+                    .AllowAnyHeader()
+                    .AllowCredentials();
             });
         });
 
         builder.Services.AddControllers();
+        builder.Services.AddSignalR();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
         {
@@ -92,6 +96,7 @@ public class Program
         builder.Services.AddScoped<IGroupMemberService, GroupMemberService>();
         builder.Services.AddScoped<IReviewerSlotConfigService, ReviewerSlotConfigService>();
         builder.Services.AddScoped<INotificationService, NotificationService>();
+        builder.Services.AddScoped<ISlotRealtimeNotifier, SlotRealtimeNotifier>();
 
         // JWT Settings
         builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
@@ -158,6 +163,7 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
+        app.MapHub<SlotHub>("/hubs/slots");
 
         app.Run();
     }
