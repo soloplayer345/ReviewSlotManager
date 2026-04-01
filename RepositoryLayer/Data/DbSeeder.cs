@@ -16,13 +16,13 @@ public static class DbSeeder
         var now = DateTime.UtcNow;
         var defaultPassword = BCrypt.Net.BCrypt.HashPassword("Password@123");
 
-        var moderator = new User { FullName = "Moderator One", Email = "mod@rsm.local", PasswordHash = defaultPassword, Role = UserRole.Moderator, CreatedAt = now, UpdatedAt = now };
-        var gvhd = new User { FullName = "GVHD One", Email = "gvhd1@rsm.local", PasswordHash = defaultPassword, Role = UserRole.Gvhd, CreatedAt = now, UpdatedAt = now };
-        var reviewer = new User { FullName = "GV Review One", Email = "gvr1@rsm.local", PasswordHash = defaultPassword, Role = UserRole.GvReview, CreatedAt = now, UpdatedAt = now };
-        var studentOne = new User { FullName = "Student One", Email = "sv1@rsm.local", PasswordHash = defaultPassword, Role = UserRole.Student, CreatedAt = now, UpdatedAt = now };
-        var studentTwo = new User { FullName = "Student Two", Email = "sv2@rsm.local", PasswordHash = defaultPassword, Role = UserRole.Student, CreatedAt = now, UpdatedAt = now };
+        var moderator = new User { FullName = "Nguyen Van Mod", Email = "modnv@fpt.edu.vn", PasswordHash = defaultPassword, Role = UserRole.Moderator, CreatedAt = now, UpdatedAt = now };
+        var gvhd = new User { FullName = "Tran Van Giang", Email = "giangtv@fpt.edu.vn", PasswordHash = defaultPassword, Role = UserRole.Gvhd, CreatedAt = now, UpdatedAt = now };
+        var studentOne = new User { FullName = "Le Hoang Nam", Email = "namlhse170001@fpt.edu.vn", PasswordHash = defaultPassword, Role = UserRole.Student, CreatedAt = now, UpdatedAt = now };
+        var studentTwo = new User { FullName = "Pham Minh Duc", Email = "ducpmse170002@fpt.edu.vn", PasswordHash = defaultPassword, Role = UserRole.Student, CreatedAt = now, UpdatedAt = now };
+        var studentThree = new User { FullName = "Vo Thanh Tung", Email = "tungvtse170003@fpt.edu.vn", PasswordHash = defaultPassword, Role = UserRole.Student, CreatedAt = now, UpdatedAt = now };
 
-        await context.Users.AddRangeAsync(moderator, gvhd, reviewer, studentOne, studentTwo);
+        await context.Users.AddRangeAsync(moderator, gvhd, studentOne, studentTwo, studentThree);
         await context.SaveChangesAsync();
 
         var semester = new Semester
