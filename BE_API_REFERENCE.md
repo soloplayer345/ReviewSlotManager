@@ -2,6 +2,14 @@
 
 Tai lieu nay de FE co the mock API nhanh theo dung contract hien tai cua BE.
 
+### Cac endpoint FE hay hoi (da co trong BE)
+
+| Method | Route | Ghi chu |
+|--------|-------|---------|
+| GET | `/api/ReviewRounds/semester/{semesterId}` | Danh sach round theo hoc ky |
+| GET | `/api/GroupMembers/student/{studentId}` | Membership theo user sinh vien |
+| GET | `/api/Semesters/active` | `200` neu co `IsActive=true`; `404` + JSON neu chua co semester active |
+
 ## 1) Base URL va quy uoc chung
 
 - Base URL local (thuong dung): `https://localhost:<port>`
@@ -64,6 +72,7 @@ Request body:
 Response `200`:
 ```json
 {
+  "userId": 1,
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "fullName": "Nguyen Van A",
   "email": "student1@fpt.edu.vn",
@@ -139,7 +148,14 @@ UserDto response shape:
 ### GET `/api/Semesters/count`
 ### GET `/api/Semesters/active`
 
-`/active` tra semester dang active, co the `404` neu khong co.
+- Tra semester co `isActive: true` (neu nhieu dong active, BE lay ban ghi dau tien).
+- Neu **khong co** semester nao active: `404` voi body:
+```json
+{
+  "error": "No active semester configured.",
+  "status": 404
+}
+```
 
 ### POST `/api/Semesters`
 Request body:
@@ -223,6 +239,10 @@ GroupDto response shape:
 ### GET `/api/GroupMembers/count`
 ### GET `/api/GroupMembers/group/{groupId}`
 
+### GET `/api/GroupMembers/student/{studentId}`
+
+Tra ve **mang** `GroupMemberDto` (tat ca membership cua sinh vien do). Neu khong co nhóm nao: `[]`.
+
 ### POST `/api/GroupMembers`
 Request body:
 ```json
@@ -251,6 +271,10 @@ GroupMemberDto response shape:
 ### GET `/api/ReviewRounds?pageSize=20&pageNumber=1`
 ### GET `/api/ReviewRounds/{id}`
 ### GET `/api/ReviewRounds/open`
+
+### GET `/api/ReviewRounds/semester/{semesterId}`
+
+Danh sach review round thuoc hoc ky. Neu khong co round: `[]`.
 
 ### POST `/api/ReviewRounds`
 Request body:
@@ -290,6 +314,8 @@ ReviewRoundDto response shape:
   "roundName": "Review 1",
   "registrationOpenAt": "2026-10-01T00:00:00Z",
   "registrationCloseAt": "2026-10-10T23:59:59Z",
+  "reviewDateFrom": "2026-10-15T08:00:00Z",
+  "reviewDateTo": "2026-10-20T17:00:00Z",
   "status": "Open"
 }
 ```

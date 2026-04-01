@@ -28,7 +28,11 @@ public class GroupMembersController : BaseController<IGroupMemberService, GroupM
         return Ok(result);
     }
 
+    /// <summary>
+    /// Tat ca membership cua mot sinh vien (co the nhieu dong neu du lieu lich su / nhieu ky).
+    /// </summary>
     [HttpGet("student/{studentId:int}")]
+    [ProducesResponseType(typeof(List<GroupMemberDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByStudent(int studentId)
     {
         var result = await _service.GetByStudent(studentId);

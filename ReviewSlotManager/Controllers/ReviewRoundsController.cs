@@ -21,7 +21,11 @@ public class ReviewRoundsController : BaseController<IReviewRoundService, Review
         return Ok(result);
     }
 
+    /// <summary>
+    /// Danh sach review round theo hoc ky (semesterId).
+    /// </summary>
     [HttpGet("semester/{semesterId:int}")]
+    [ProducesResponseType(typeof(List<ReviewRoundDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBySemester(int semesterId)
     {
         var result = await _service.GetBySemester(semesterId);

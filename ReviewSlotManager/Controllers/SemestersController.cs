@@ -21,11 +21,20 @@ public class SemestersController : BaseController<ISemesterService, SemesterDto>
         return Ok(new { count });
     }
 
+    /// <summary>
+    /// Lay semester dang IsActive = true. Neu khong co semester active thi tra 404 (FE nen bat case nay).
+    /// </summary>
     [HttpGet("active")]
+    [ProducesResponseType(typeof(SemesterDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetActive()
     {
         var result = await _service.GetActiveSemester();
-        if (result is null) return NotFound();
+        if (result is null)
+        {
+            return NotFound(new { error = "No active semester configured.", status = 404 });
+        }
+
         return Ok(result);
     }
 
