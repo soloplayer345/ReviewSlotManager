@@ -5,6 +5,7 @@ using ServiceLayer.Services;
 
 namespace ReviewSlotManager.Controllers;
 
+[ApiController]
 [Route("api/[controller]")]
 public class ReviewerSlotRegistrationsController : ControllerBase
 {

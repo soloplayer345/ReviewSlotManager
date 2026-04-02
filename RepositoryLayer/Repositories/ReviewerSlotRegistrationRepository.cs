@@ -60,9 +60,9 @@ public class ReviewerSlotRegistrationRepository : IReviewerSlotRegistrationRepos
 
         var reviewer = await _context.Users.FirstOrDefaultAsync(x => x.UserId == reviewerId)
             ?? throw new KeyNotFoundException("Reviewer not found.");
-        if (reviewer.Role != UserRole.GvReview)
+        if (reviewer.Role != UserRole.GvReview && reviewer.Role != UserRole.Gvhd)
         {
-            throw new InvalidOperationException("User is not a GV Review.");
+            throw new InvalidOperationException("User is not a GV Review or GVHD.");
         }
 
         var slot = await _context.Slots.FirstOrDefaultAsync(x => x.SlotId == slotId)
