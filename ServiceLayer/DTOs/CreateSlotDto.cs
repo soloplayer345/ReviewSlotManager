@@ -26,6 +26,6 @@ public class CreateSlotDto
     [Range(1, 10)]
     public int MaxReviewers { get; set; } = 3;
 
-    [Required]
+    // Set by the server from JWT token, not from client
     public int CreatedBy { get; set; }
 }

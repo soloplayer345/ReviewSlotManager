@@ -7,6 +7,7 @@ using RepositoryLayer.Entities;
 using RepositoryLayer.Enums;
 using RepositoryLayer.Repositories;
 using ServiceLayer.DTOs;
+using ServiceLayer.Exceptions;
 
 namespace ServiceLayer.Services;
 
@@ -88,6 +89,14 @@ public class SlotService : BaseService<Slot, SlotDto>, ISlotService
 
     public async Task<SlotDto> Create(CreateSlotDto dto)
     {
+        var roundExists = await _context.ReviewRounds.AnyAsync(r => r.RoundId == dto.RoundId);
+        if (!roundExists)
+            throw new NotFoundException($"ReviewRound {dto.RoundId} not found.");
+
+        var userExists = await _context.Users.AnyAsync(u => u.UserId == dto.CreatedBy);
+        if (!userExists)
+            throw new NotFoundException($"User {dto.CreatedBy} not found.");
+
         var entity = new Slot
         {
             RoundId = dto.RoundId,
