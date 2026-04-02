@@ -12,7 +12,9 @@ Tai lieu nay de FE co the mock API nhanh theo dung contract hien tai cua BE.
 
 ## 1) Base URL va quy uoc chung
 
-- Base URL local (thuong dung): `https://localhost:<port>`
+- **Docker Compose** (`docker-compose up`): `http://localhost:8080` (service `api`, map `8080:8080`).
+- **dotnet run** (khong Docker): xem `ReviewSlotManager/Properties/launchSettings.json` — vi du `http://localhost:5116` hoac `https://localhost:7245`.
+- Base URL = `{host}` + prefix API `/api` (vi du `http://localhost:8080/api/Auth/login`).
 - Prefix API: `/api`
 - Content-Type request: `application/json`
 - Pagination mac dinh (neu endpoint co): `pageSize=20&pageNumber=1`
